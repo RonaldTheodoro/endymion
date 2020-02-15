@@ -20,5 +20,5 @@ def app(environ, start_response):
     return [response_body.encode('utf8')]
 
 
-with simple_server.make_server('localhost', 8000, Reverseware(app)) as http_server:
-    http_server.serve_forever()
+with simple_server.make_server('localhost', 8000, Reverseware(app)) as server:
+    server.serve_forever()
