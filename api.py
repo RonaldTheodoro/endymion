@@ -31,10 +31,10 @@ class API(object):
     def handle_request(self, request):
         response = webob.Response()
 
-        handler, path_params = self.find_handler(request.path)
+        handler, kwargs = self.find_handler(request.path)
 
         if handler is not None:
-            handler(request, response, **path_params.groupdict())
+            handler(request, response, **kwargs)
         else:
             self.default_response(response)
 
@@ -44,7 +44,7 @@ class API(object):
         for path, handler in self.routes.items():
             path_params = path.match(request_path)
             if path_params is not None:
-                return handler, path_params
+                return handler, path_params.groupdict()
 
     def default_response(self, response):
         response.status_code = 404
