@@ -2,6 +2,8 @@ import re
 
 import webob
 
+import utils
+
 
 class API(object):
 
@@ -18,20 +20,13 @@ class API(object):
     def route(self, path):
 
         def wrapper(handler):
-            compiled_path = self.build_route_regexp(path)
+            compiled_path = utils.build_route_regexp(path)
 
             if compiled_path not in self.routes:
                 self.routes[compiled_path] = handler
                 return handler
 
         return wrapper
-
-    @classmethod
-    def build_route_regexp(cls, path):
-        named_groups = lambda match: f'(?P<{match.group(1)}>[a-zA-Z0-9_-]+)'
-
-        regex_str = re.sub(r'{([a-zA-Z0-9_-]+)}', named_groups, path)
-        return re.compile(f'^{regex_str}$')
 
     def handle_request(self, request):
         response = webob.Response()
