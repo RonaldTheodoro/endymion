@@ -1,3 +1,5 @@
+import re
+
 import webob
 
 
@@ -16,18 +18,28 @@ class API(object):
     def route(self, path):
 
         def wrapper(handler):
-            self.routes[path] = handler
-            return handler
+            compiled_path = self.build_route_regexp(path)
+
+            if compiled_path not in self.routes:
+                self.routes[compiled_path] = handler
+                return handler
 
         return wrapper
+
+    @classmethod
+    def build_route_regexp(cls, path):
+        named_groups = lambda match: f'(?P<{match.group(1)}>[a-zA-Z0-9_-]+)'
+
+        regex_str = re.sub(r'{([a-zA-Z0-9_-]+)}', named_groups, path)
+        return re.compile(f'^{regex_str}$')
 
     def handle_request(self, request):
         response = webob.Response()
 
-        handler = self.find_handler(request.path)
+        handler, path_params = self.find_handler(request.path)
 
         if handler is not None:
-            handler(request, response)
+            handler(request, response, **path_params.groupdict())
         else:
             self.default_response(response)
 
@@ -35,8 +47,9 @@ class API(object):
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
-            if path == request_path:
-                return handler
+            path_params = path.match(request_path)
+            if path_params is not None:
+                return handler, path_params
 
     def default_response(self, response):
         response.status_code = 404
