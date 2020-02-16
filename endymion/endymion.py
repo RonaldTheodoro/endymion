@@ -51,3 +51,4 @@ class Endymion(object):
         response = webob.Response()
         response.status_code = 404
         response.text = 'Not found.'
+        return response
