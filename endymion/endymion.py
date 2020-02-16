@@ -19,13 +19,17 @@ class Endymion(object):
         return response(environ, start_response)
 
     def route(self, path):
-        assert path not in self.routes, 'Such route already exists'
 
         def wrapper(handler):
-            self.routes[path] = handler
+            self.add_route(path, handler)
             return handler
 
         return wrapper
+    
+    def add_route(self, path, handler):
+        assert path not in self.routes, 'Such route already exists'
+
+        self.routes[path] = handler
 
     def handle_request(self, request):
         handler, kwargs = self.find_handler(request.path)

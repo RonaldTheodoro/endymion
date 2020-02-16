@@ -90,3 +90,15 @@ def test_cbv_handler_not_implemented(app, client):
 
     with pytest.raises(AttributeError):
         client.post('http://testserver/book')
+
+
+def test_alternative_route(app, client):
+    RESPONSE_TEXT = 'Alternative way to add a route'
+
+    def index(request):
+        return RESPONSE_TEXT
+
+    app.add_route('/alternative', index)
+
+    response = client.get('http://testserver/alternative')
+    assert response.text == RESPONSE_TEXT
