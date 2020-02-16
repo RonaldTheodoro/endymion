@@ -1,8 +1,8 @@
-from endymion import API
+from endymion import Endymion
 from endymion.views import View
 
 
-app = API()
+app = Endymion()
 
 
 @app.route('/')
