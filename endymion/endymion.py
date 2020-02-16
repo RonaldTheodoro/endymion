@@ -1,5 +1,7 @@
 import inspect
+import os
 
+import jinja2
 import parse
 import requests
 import webob
@@ -8,8 +10,12 @@ import wsgiadapter
 
 class Endymion(object):
 
-    def __init__(self):
+    def __init__(self, templates_dir='templates'):
         self.routes = {}
+
+        self.templates_env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(os.path.abspath(templates_dir))
+        )
 
     def __call__(self, environ, start_response):
         request = webob.Request(environ)
@@ -65,3 +71,9 @@ class Endymion(object):
         session = requests.Session()
         session.mount(prefix=base_url, adapter=wsgiadapter.WSGIAdapter(self))
         return session
+
+    def template(self, template_name, context=None):
+        if context is None:
+            context = {}
+
+        return self.templates_env.get_template(template_name).render(**context)

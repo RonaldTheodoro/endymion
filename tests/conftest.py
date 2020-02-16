@@ -5,7 +5,7 @@ from endymion import Endymion
 
 @pytest.fixture
 def app():
-    return Endymion()
+    return Endymion(templates_dir='tests/resources/templates')
 
 
 @pytest.fixture

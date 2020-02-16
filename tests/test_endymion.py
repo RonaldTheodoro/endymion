@@ -102,3 +102,17 @@ def test_alternative_route(app, client):
 
     response = client.get('http://testserver/alternative')
     assert response.text == RESPONSE_TEXT
+
+
+def test_template(app, client):
+    @app.route('/html')
+    def html(request):
+        return app.template(
+            'index.html',
+            context={'title': 'Some title', 'name': 'Some name'}
+        )
+
+    response = client.get('http://testserver/html')
+    assert 'text/html' in response.headers['Content-Type']
+    assert 'Some title' in response.text
+    assert 'Some name' in response.text
