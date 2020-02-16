@@ -1,5 +1,5 @@
-from api import API
-from generic_view import View
+from endymion import API
+from endymion import View
 
 
 app = API()
