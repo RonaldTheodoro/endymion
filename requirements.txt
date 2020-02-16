@@ -1,0 +1,6 @@
+webob
+parse
+jinja2
+requests
+requests-wsgi-adapter
+whitenoise
