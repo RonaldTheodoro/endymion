@@ -5,12 +5,13 @@ import jinja2
 import parse
 import requests
 import webob
+import whitenoise
 import wsgiadapter
 
 
 class Endymion(object):
 
-    def __init__(self, templates_dir='templates'):
+    def __init__(self, templates_dir='templates', static_dir='static'):
         self.routes = {}
 
         self.templates_env = jinja2.Environment(
@@ -19,7 +20,12 @@ class Endymion(object):
 
         self.exception_handler = None
 
+        self.whitenose = whitenoise.WhiteNoise(self.wsgi_app, root=static_dir)
+    
     def __call__(self, environ, start_response):
+        return self.whitenose(environ, start_response)
+
+    def wsgi_app(self, environ, start_response):
         request = webob.Request(environ)
 
         response = self.handle_request(request)
