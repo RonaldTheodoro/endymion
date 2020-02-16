@@ -78,3 +78,15 @@ def test_cbv_post(app, client):
         data={'book': 'Fluent Python'}
     )
     assert response.text == 'Book: Fluent Python'
+
+
+def test_cbv_handler_not_implemented(app, client):
+
+    @app.route('/book')
+    class BookResource(View):
+
+        def get(self, request):
+            return 'response'
+
+    with pytest.raises(AttributeError):
+        client.post('http://testserver/book')
