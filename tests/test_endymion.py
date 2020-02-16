@@ -138,7 +138,6 @@ def test_custom_exception_handler(app, client):
     def on_exception(request, exc):
         return RESPONSE_TEXT
 
-
     @app.route('/exception')
     def index(request):
         raise AttributeError()

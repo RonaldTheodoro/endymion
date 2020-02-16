@@ -21,7 +21,7 @@ class Endymion(object):
         self.exception_handler = {}
 
         self.whitenose = whitenoise.WhiteNoise(self.wsgi_app, root=static_dir)
-    
+
     def __call__(self, environ, start_response):
         return self.whitenose(environ, start_response)
 
@@ -39,7 +39,7 @@ class Endymion(object):
             return handler
 
         return wrapper
-    
+
     def add_route(self, path, handler):
         assert path not in self.routes, 'Such route already exists'
 

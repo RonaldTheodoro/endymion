@@ -5,5 +5,5 @@ class View(object):
 
         if handler is None:
             raise AttributeError('Method not allowed', request.method)
-        
+
         return handler(request, **kwargs)
