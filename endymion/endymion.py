@@ -17,6 +17,8 @@ class Endymion(object):
             loader=jinja2.FileSystemLoader(os.path.abspath(templates_dir))
         )
 
+        self.exception_handler = None
+
     def __call__(self, environ, start_response):
         request = webob.Request(environ)
 
@@ -40,13 +42,19 @@ class Endymion(object):
     def handle_request(self, request):
         handler, kwargs = self.find_handler(request.path)
 
-        if handler is not None:
-            if inspect.isclass(handler):
-                handler = handler()
+        try:
+            if handler is not None:
+                if inspect.isclass(handler):
+                    handler = handler()
 
-            response = handler(request, **kwargs)
-        else:
-            response = self.default_response()
+                response = handler(request, **kwargs)
+            else:
+                response = self.default_response()
+        except Exception as err:
+            if self.exception_handler is None:
+                raise err
+            else:
+                response = self.exception_handler(request, err)
 
         if isinstance(response, str):
             response = webob.Response(body=response)
@@ -77,3 +85,6 @@ class Endymion(object):
             context = {}
 
         return self.templates_env.get_template(template_name).render(**context)
+
+    def add_exception_handler(self, exception_handler):
+        self.exception_handler = exception_handler
