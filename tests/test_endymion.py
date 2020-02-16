@@ -20,3 +20,14 @@ def test_route_overlap_throws_exception(app):
         @app.route('/home')
         def index02(request):
             return 'YOLO'
+
+
+def test_endymion_test_client_can_send_requests(app, client):
+    RESPONSE_TEXT = "I'll be back"
+
+    @app.route('/terminator')
+    def terminator(request):
+        return RESPONSE_TEXT
+
+    response = client.get('http://testserver/terminator')
+    assert response.text == RESPONSE_TEXT
