@@ -1,3 +1,5 @@
+import inspect
+
 import parse
 import webob
 
@@ -29,6 +31,9 @@ class API(object):
         handler, kwargs = self.find_handler(request.path)
 
         if handler is not None:
+            if inspect.isclass(handler):
+                handler = handler()
+
             handler(request, response, **kwargs)
         else:
             self.default_response(response)
