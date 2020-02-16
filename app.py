@@ -1,5 +1,5 @@
 from endymion import API
-from endymion import View
+from endymion.views import View
 
 
 app = API()
