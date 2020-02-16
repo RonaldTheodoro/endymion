@@ -40,3 +40,11 @@ def django_like_route(request):
 
 
 app.add_route('/django', django_like_route)
+
+
+@app.route('/template')
+def template_handler(request):
+    return app.template(
+        'index.html',
+        context={'name': 'Endymion', 'title': 'Endymion Framework'}
+    )
