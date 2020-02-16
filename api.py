@@ -1,8 +1,5 @@
-import re
-
+import parse
 import webob
-
-import utils
 
 
 class API(object):
@@ -20,10 +17,9 @@ class API(object):
     def route(self, path):
 
         def wrapper(handler):
-            compiled_path = utils.build_route_regexp(path)
 
-            if compiled_path not in self.routes:
-                self.routes[compiled_path] = handler
+            if path not in self.routes:
+                self.routes[path] = handler
                 return handler
 
         return wrapper
@@ -42,9 +38,9 @@ class API(object):
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
-            path_params = path.match(request_path)
-            if path_params is not None:
-                return handler, path_params.groupdict()
+            parse_result = parse.parse(path, request_path)
+            if parse_result is not None:
+                return handler, parse_result.named
 
     def default_response(self, response):
         response.status_code = 404
