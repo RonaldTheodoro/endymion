@@ -62,3 +62,19 @@ def test_cbv_get(app, client):
 
     response = client.get('http://testserver/book')
     assert response.text == RESPONSE_TEXT
+
+
+def test_cbv_post(app, client):
+
+    @app.route('/book')
+    class BookResource(View):
+
+        def post(self, request):
+            book = request.POST['book']
+            return f'Book: {book}'
+
+    response = client.post(
+        'http://testserver/book',
+        data={'book': 'Fluent Python'}
+    )
+    assert response.text == 'Book: Fluent Python'
