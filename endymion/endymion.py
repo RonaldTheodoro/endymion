@@ -46,6 +46,8 @@ class Endymion(object):
             parse_result = parse.parse(path, request_path)
             if parse_result is not None:
                 return handler, parse_result.named
+        else:
+            return None, None
 
     def default_response(self):
         response = webob.Response()
