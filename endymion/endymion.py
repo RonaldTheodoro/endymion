@@ -26,17 +26,18 @@ class Endymion(object):
         return wrapper
 
     def handle_request(self, request):
-        response = webob.Response()
-
         handler, kwargs = self.find_handler(request.path)
 
         if handler is not None:
             if inspect.isclass(handler):
                 handler = handler()
 
-            handler(request, response, **kwargs)
+            response = handler(request, **kwargs)
         else:
-            self.default_response(response)
+            response = self.default_response()
+
+        if isinstance(response, str):
+            response = webob.Response(body=response)
 
         return response
 
@@ -46,6 +47,7 @@ class Endymion(object):
             if parse_result is not None:
                 return handler, parse_result.named
 
-    def default_response(self, response):
+    def default_response(self):
+        response = webob.Response()
         response.status_code = 404
         response.text = 'Not found.'
