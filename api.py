@@ -15,12 +15,11 @@ class API(object):
         return response(environ, start_response)
 
     def route(self, path):
+        assert path not in self.routes, 'Such route already exists'
 
         def wrapper(handler):
-
-            if path not in self.routes:
-                self.routes[path] = handler
-                return handler
+            self.routes[path] = handler
+            return handler
 
         return wrapper
 
