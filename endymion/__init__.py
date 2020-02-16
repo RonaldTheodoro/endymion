@@ -1,4 +1,4 @@
-from .endymion import API
+from endymion.endymion import API
 
 
 __all__ = ['API']
