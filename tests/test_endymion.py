@@ -133,3 +133,9 @@ def test_custom_exception_handler(app, client):
     response = client.get('http://testserver/exception')
 
     assert response.text == RESPONSE_TEXT
+
+
+def test_404_is_returned_for_nonexistent_static_file(client):
+    response = client.get('http://testserver/main.css')
+
+    assert response.status_code == 404
