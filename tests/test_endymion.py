@@ -1,5 +1,7 @@
 import pytest
 
+from endymion.views import View
+
 
 def test_basic_route_adding(app):
     @app.route('/home')
@@ -47,3 +49,16 @@ def test_default_404_response(client):
 
     assert response.status_code == 404
     assert response.text == 'Not found.'
+
+
+def test_cbv_get(app, client):
+    RESPONSE_TEXT = 'GET response'
+
+    @app.route('/book')
+    class BookResource(View):
+
+        def get(self, request):
+            return RESPONSE_TEXT
+
+    response = client.get('http://testserver/book')
+    assert response.text == RESPONSE_TEXT
