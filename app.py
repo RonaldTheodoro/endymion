@@ -33,3 +33,10 @@ class BookResource(View):
 
     def post(self, request):
         return 'Endpoint to create a book'
+
+
+def django_like_route(request):
+    return 'I am a django like route'
+
+
+app.add_route('/django', django_like_route)
