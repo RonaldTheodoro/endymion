@@ -134,10 +134,10 @@ def test_template(app, client):
 def test_custom_exception_handler(app, client):
     RESPONSE_TEXT = 'AttributeErrorHappend'
 
+    @app.add_exception_handler(AttributeError)
     def on_exception(request, exc):
         return RESPONSE_TEXT
 
-    app.add_exception_handler(on_exception)
 
     @app.route('/exception')
     def index(request):

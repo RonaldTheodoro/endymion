@@ -18,7 +18,7 @@ class Endymion(object):
             loader=jinja2.FileSystemLoader(os.path.abspath(templates_dir))
         )
 
-        self.exception_handler = None
+        self.exception_handler = {}
 
         self.whitenose = whitenoise.WhiteNoise(self.wsgi_app, root=static_dir)
     
@@ -57,10 +57,12 @@ class Endymion(object):
             else:
                 response = self.default_response()
         except Exception as err:
-            if self.exception_handler is None:
-                raise err
+            for exc, handler in self.exception_handler.items():
+                if isinstance(err, exc):
+                    response = handler(request, err)
+                    break
             else:
-                response = self.exception_handler(request, err)
+                raise err
 
         if isinstance(response, str):
             response = webob.Response(body=response)
@@ -92,5 +94,10 @@ class Endymion(object):
 
         return self.templates_env.get_template(template_name).render(**context)
 
-    def add_exception_handler(self, exception_handler):
-        self.exception_handler = exception_handler
+    def add_exception_handler(self, exc):
+
+        def wrapper(handler):
+            self.exception_handler[exc] = handler
+            return handler
+
+        return wrapper
