@@ -12,6 +12,7 @@ pytest-cov = "*"
 [packages]
 webob = "*"
 parse = "*"
+jinja2 = "*"
 
 [requires]
 python_version = "3.6"
