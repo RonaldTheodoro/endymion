@@ -1,7 +1,9 @@
 import inspect
 
 import parse
+import requests
 import webob
+import wsgiadapter
 
 
 class Endymion(object):
@@ -54,3 +56,8 @@ class Endymion(object):
         response.status_code = 404
         response.text = 'Not found.'
         return response
+
+    def test_session(self, base_url='http://testserver'):
+        session = requests.Session()
+        session.mount(prefix=base_url, adapter=wsgiadapter.WSGIAdapter(self))
+        return session
