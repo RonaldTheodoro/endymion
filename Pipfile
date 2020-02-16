@@ -5,14 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-requests = "*"
-requests-wsgi-adapter = "*"
 pytest-cov = "*"
 
 [packages]
 webob = "*"
 parse = "*"
 jinja2 = "*"
+requests = "*"
+requests-wsgi-adapter = "*"
 
 [requires]
 python_version = "3.6"
