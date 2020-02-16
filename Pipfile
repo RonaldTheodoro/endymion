@@ -13,6 +13,7 @@ parse = "*"
 jinja2 = "*"
 requests = "*"
 requests-wsgi-adapter = "*"
+whitenoise = "*"
 
 [requires]
 python_version = "3.6"
