@@ -31,3 +31,12 @@ def test_endymion_test_client_can_send_requests(app, client):
 
     response = client.get('http://testserver/terminator')
     assert response.text == RESPONSE_TEXT
+
+
+def test_parameterized_route(app, client):
+    @app.route('/{name}')
+    def say_hello(request, name):
+        return f'hey {name}'
+
+    response = client.get('http://testserver/shimira')
+    assert response.text == 'hey shimira'
