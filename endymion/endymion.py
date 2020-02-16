@@ -4,7 +4,7 @@ import parse
 import webob
 
 
-class API(object):
+class Endymion(object):
 
     def __init__(self):
         self.routes = {}
