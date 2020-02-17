@@ -8,6 +8,8 @@ import webob
 import whitenoise
 import wsgiadapter
 
+from endymion import exceptions
+
 
 class Endymion(object):
 
