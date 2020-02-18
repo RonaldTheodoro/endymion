@@ -86,22 +86,23 @@ class Endymion(object):
 
             response = handler(request, **kwargs)
         except Exception as err:
-            for exc, handler in self.exception_handler.items():
-                if isinstance(err, exc):
-                    logging.warn(
-                        'The exception handler %s will be called',
-                        handler.__name__
-                    )
-                    response = handler(request, err)
-                    break
-            else:
-                logging.warn(
-                    'Was not found a handler for this exception, '
-                    'it will be reraise'
-                )
-                raise err
+            response = self.check_exception_handler(err, request)
 
         return response
+
+    def check_exception_handler(self, err, request):
+        for exc, handler in self.exception_handler.items():
+            if isinstance(err, exc):
+                logging.warn(
+                    'The exception handler %s will be called',
+                    handler.__name__
+                )
+                return handler(request, err)
+        
+        logging.warn(
+            'Was not found a handler for this exception, it will be reraise'
+        )
+        raise err
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
