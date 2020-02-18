@@ -1,6 +1,7 @@
 import pytest
 
 from endymion import Endymion
+from endymion import exceptions
 from endymion.views import View
 
 
@@ -31,7 +32,7 @@ def test_route_overlap_throws_exception(app):
 
     assert '/home' in app.routes
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(exceptions.RouteAlreadyExists):
         @app.route('/home')
         def index02(request):
             return 'YOLO'
@@ -101,8 +102,10 @@ def test_cbv_handler_not_implemented(app, client):
         def get(self, request):
             return 'response'
 
-    with pytest.raises(AttributeError):
-        client.post('http://testserver/book')
+    response = client.post('http://testserver/book')
+
+    assert response.status_code == 500
+    assert response.text == 'Method not allowed'
 
 
 def test_alternative_route(app, client):

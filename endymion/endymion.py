@@ -43,21 +43,37 @@ class Endymion(object):
         return wrapper
 
     def add_route(self, path, handler):
-        assert path not in self.routes, 'Such route already exists'
+        if path in self.routes:
+            raise exceptions.RouteAlreadyExists()
 
         self.routes[path] = handler
 
     def handle_request(self, request):
-        handler, kwargs = self.find_handler(request.path)
 
         try:
-            if handler is not None:
-                if inspect.isclass(handler):
-                    handler = handler()
+            handler, kwargs = self.find_handler(request.path)
+            response = self.execute_handler(request, handler, **kwargs)
+        except exceptions.HTTPError as err:
+            response = webob.Response(body=err.msg, status=err.status_code)
+        except exceptions.EndymionBaseException as err:
+            response = webob.Response(body=err.msg, status=500)
+        except Exception as err:
+            response = webob.Response(
+                body='An internal error happend',
+                status=500
+            )
 
-                response = handler(request, **kwargs)
-            else:
-                response = self.default_response()
+        if isinstance(response, str):
+            response = webob.Response(body=response)
+
+        return response
+
+    def execute_handler(self, request, handler, **kwargs):
+        try:
+            if inspect.isclass(handler):
+                handler = handler()
+
+            response = handler(request, **kwargs)
         except Exception as err:
             for exc, handler in self.exception_handler.items():
                 if isinstance(err, exc):
@@ -66,9 +82,6 @@ class Endymion(object):
             else:
                 raise err
 
-        if isinstance(response, str):
-            response = webob.Response(body=response)
-
         return response
 
     def find_handler(self, request_path):
@@ -76,14 +89,8 @@ class Endymion(object):
             parse_result = parse.parse(path, request_path)
             if parse_result is not None:
                 return handler, parse_result.named
-        else:
-            return None, None
 
-    def default_response(self):
-        response = webob.Response()
-        response.status_code = 404
-        response.text = 'Not found.'
-        return response
+        raise exceptions.NotFound()
 
     def test_session(self, base_url='http://testserver'):
         session = requests.Session()

@@ -1,9 +1,12 @@
+from endymion import exceptions
+
+
 class View(object):
 
     def __call__(self, request, **kwargs):
-        handler = getattr(self, request.method.lower())
+        handler = getattr(self, request.method.lower(), None)
 
         if handler is None:
-            raise AttributeError('Method not allowed', request.method)
+            raise exceptions.MethodNotAllowed()
 
         return handler(request, **kwargs)
