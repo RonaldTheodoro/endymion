@@ -1,4 +1,5 @@
 import inspect
+import logging
 import os
 
 import jinja2
@@ -9,6 +10,12 @@ import whitenoise
 import wsgiadapter
 
 from endymion import exceptions
+
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+)
 
 
 class Endymion(object):
@@ -46,6 +53,7 @@ class Endymion(object):
         if path in self.routes:
             raise exceptions.RouteAlreadyExists()
 
+        logging.info('Adding handler to %s route', path)
         self.routes[path] = handler
 
     def handle_request(self, request):
@@ -54,10 +62,13 @@ class Endymion(object):
             handler, kwargs = self.find_handler(request.path)
             response = self.execute_handler(request, handler, **kwargs)
         except exceptions.HTTPError as err:
+            logging.exception('A HTTP error happend')
             response = webob.Response(body=err.msg, status=err.status_code)
         except exceptions.EndymionBaseException as err:
+            logging.exception('An expected error happend')
             response = webob.Response(body=err.msg, status=500)
         except Exception as err:
+            logging.exception('An unexpected error happend')
             response = webob.Response(
                 body='An internal error happend',
                 status=500
@@ -77,9 +88,17 @@ class Endymion(object):
         except Exception as err:
             for exc, handler in self.exception_handler.items():
                 if isinstance(err, exc):
+                    logging.warn(
+                        'The exception handler %s will be called',
+                        handler.__name__
+                    )
                     response = handler(request, err)
                     break
             else:
+                logging.warn(
+                    'Was not found a handler for this exception, '
+                    'it will be reraise'
+                )
                 raise err
 
         return response
@@ -106,6 +125,11 @@ class Endymion(object):
     def add_exception_handler(self, exc):
 
         def wrapper(handler):
+            logging.info(
+                'Adding %s handler to exception %s',
+                handler.__name__,
+                repr(exc)
+            )
             self.exception_handler[exc] = handler
             return handler
 
