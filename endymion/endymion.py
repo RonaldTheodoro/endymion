@@ -98,7 +98,7 @@ class Endymion(object):
                     handler.__name__
                 )
                 return handler(request, err)
-        
+
         logging.warning(
             'Was not found a handler for this exception, it will be reraise'
         )
