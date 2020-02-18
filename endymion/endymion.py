@@ -93,13 +93,13 @@ class Endymion(object):
     def check_exception_handler(self, err, request):
         for exc, handler in self.exception_handler.items():
             if isinstance(err, exc):
-                logging.warn(
+                logging.warning(
                     'The exception handler %s will be called',
                     handler.__name__
                 )
                 return handler(request, err)
         
-        logging.warn(
+        logging.warning(
             'Was not found a handler for this exception, it will be reraise'
         )
         raise err
